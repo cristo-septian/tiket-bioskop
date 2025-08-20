@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto">
+  <h1 class="text-2xl font-bold mb-4">Registrasi Pengguna</h1>
+  <form method="post" class="space-y-3 p-6 rounded-2xl bg-white/5 border border-white/10">
+    <label class="block">
+      <span class="text-sm">Username</span>
+      <input name="username" required class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10 focus:outline-none" />
+    </label>
+    <label class="block">
+      <span class="text-sm">Password</span>
+      <input name="password" type="password" required class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10 focus:outline-none" />
+    </label>
+    <button class="w-full py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700">Buat Akun</button>
+  </form>
+</div>
+{% endblock %}
+

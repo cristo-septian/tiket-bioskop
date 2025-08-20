@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid md:grid-cols-2 gap-6 items-center">
+  <div class="hidden md:block">
+    <h1 class="text-3xl font-bold mb-3">Masuk ke GalaxyTix</h1>
+    <p class="opacity-80">Nikmati pengalaman beli tiket bernuansa luar angkasa ✨</p>
+  </div>
+  <form method="post" class="space-y-3 p-6 rounded-2xl bg-white/5 border border-white/10">
+    <label class="block">
+      <span class="text-sm">Username</span>
+      <input name="username" required class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10 focus:outline-none" />
+    </label>
+    <label class="block">
+      <span class="text-sm">Password</span>
+      <input name="password" type="password" required class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10 focus:outline-none" />
+    </label>
+    <button class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700">Login</button>
+    <p class="text-sm opacity-80">Belum punya akun? <a href="{{ url_for('regis') }}" class="underline">Registrasi</a></p>
+  </form>
+</div>
+{% endblock %}
+

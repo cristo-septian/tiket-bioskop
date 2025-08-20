@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex flex-col md:flex-row gap-6">
+  <section class="flex-1">
+    <h2 class="text-xl font-bold mb-3">Film Akan Tayang</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      {% for film in films %}
+      <div class="rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+        <img src="{{ film.image_url or 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1200&auto=format&fit=crop' }}" class="w-full h-40 object-cover"/>
+        <div class="p-4 space-y-2">
+          <h3 class="text-lg font-semibold">{{ film.title }}</h3>
+          <p class="text-sm opacity-80">{{ film.synopsis }}</p>
+          <div class="text-sm">
+            <span class="px-2 py-1 rounded-lg bg-white/10 border border-white/10">Rp {{ "{:,}".format(film.price).replace(',', '.') }}</span>
+          </div>
+          <div class="text-xs opacity-80">
+            <div><b>Jadwal:</b> {{ ', '.join(film.showtimes()) }}</div>
+            <div><b>Lokasi:</b> {{ ', '.join(film.locations()) }}</div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <a href="{{ url_for('beli', film_id=film.id) }}" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700">Beli Tiket</a>
+            {% if current_user.role=='admin' %}
+            <form method="post" action="{{ url_for('film_delete', film_id=film.id) }}" onsubmit="return confirm('Hapus film ini?')">
+              <button class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700">Hapus</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if current_user.role=='admin' %}
+    <div class="mt-6 p-4 rounded-2xl border border-white/10 bg-white/5">
+      <h3 class="font-semibold mb-2">➕ Tambah Film (Admin)</h3>
+      <form method="post" action="{{ url_for('film_add') }}" class="grid md:grid-cols-2 gap-3">
+        <label class="block">Judul
+          <input name="title" class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10">
+        </label>
+        <label class="block">Harga (Rp)
+          <input name="price" type="number" min="1000" step="500" value="50000" class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10">
+        </label>
+        <label class="block md:col-span-2">Sinopsis
+          <textarea name="synopsis" class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10"></textarea>
+        </label>
+        <label class="block md:col-span-2">Gambar (URL)
+          <input name="image_url" class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10">
+        </label>
+        <label class="block md:col-span-2">Jadwal (pisah koma)
+          <input name="showtimes_csv" placeholder="2025-08-20 19:00, 2025-08-21 16:30" class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10">
+        </label>
+        <label class="block md:col-span-2">Lokasi (pisah koma)
+          <input name="locations_csv" placeholder="CGV PVJ, XXI PI, Cinepolis..." class="mt-1 w-full px-3 py-2 rounded-xl bg-white/10 border border-white/10">
+        </label>
+        <div class="md:col-span-2">
+          <button class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700">Simpan</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </section>
+
+  <aside class="w-full md:w-80">
+    <h2 class="text-xl font-bold mb-3">Statistik Penjualan</h2>
+    <div class="p-4 rounded-2xl border border-white/10 bg-white/5">
+      <canvas id="salesChart"></canvas>
+    </div>
+    <script>
+      const ctx = document.getElementById('salesChart');
+      const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: {{ chart_labels|tojson }},
+          datasets: [{
+            label: 'Tiket Terjual (paid)',
+            data: {{ chart_data|tojson }},
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    </script>
+  </aside>
+</div>
+{% endblock %}
+

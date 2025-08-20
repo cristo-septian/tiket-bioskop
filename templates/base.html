@@ -1,0 +1,90 @@
+
+<!doctype html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title or 'GalaxyTix — Bioskop Luar Angkasa' }}</title>
+  <!-- Tailwind via CDN Dev (cukup untuk demo) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { min-height: 100vh; overflow-x: hidden; }
+    .space-bg {
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(103, 232, 249, 0.10), transparent 60%),
+                  radial-gradient(800px 400px at 90% 20%, rgba(99, 102, 241, 0.12), transparent 60%),
+                  radial-gradient(1200px 600px at 50% 90%, rgba(236, 72, 153, 0.10), transparent 60%),
+                  #0b1020;
+    }
+    .star { position: absolute; border-radius: 50%; opacity: .85; }
+    .planet {
+      position: absolute; width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffd29d, #ff6aa2 60%, #8a54ff);
+      box-shadow: 0 0 40px rgba(255,255,255,0.2), inset 0 0 50px rgba(255,255,255,0.15);
+      animation: float 18s ease-in-out infinite;
+      opacity: .25;
+      filter: blur(1px);
+    }
+    @keyframes twinkle { 50% { opacity: .2 } }
+    @keyframes float { 50% { transform: translateY(-12px) } }
+  </style>
+</head>
+<body class="space-bg text-gray-100">
+  <!-- Lapis efek bintang & planet -->
+  <div id="stars" class="pointer-events-none fixed inset-0 z-0"></div>
+  <div class="pointer-events-none fixed -right-24 top-24 planet z-0"></div>
+  <div class="pointer-events-none fixed -left-16 bottom-10 planet z-0" style="width:120px;height:120px; animation-duration: 22s;"></div>
+
+  <script>
+    // generate bintang sederhana
+    const stars = document.getElementById('stars');
+    for (let i=0;i<140;i++){
+      const s = document.createElement('div');
+      const size = Math.random()*2+0.8;
+      s.className='star';
+      s.style.width = size+'px';
+      s.style.height = size+'px';
+      s.style.left = Math.random()*100+'%';
+      s.style.top = Math.random()*100+'%';
+      s.style.background = 'white';
+      s.style.boxShadow = '0 0 6px rgba(255,255,255,.6)';
+      s.style.animation = `twinkle ${2+Math.random()*4}s infinite ${Math.random()}s`;
+      stars.appendChild(s);
+    }
+  </script>
+
+  <nav class="relative z-10 border-b border-white/10 backdrop-blur bg-white/5">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="{{ url_for('index') }}" class="text-xl font-bold tracking-wide">🚀 GalaxyTix</a>
+      <div class="flex items-center gap-3 text-sm">
+        {% if current_user.is_authenticated %}
+          <span class="opacity-80">Halo, <strong>{{ current_user.username }}</strong>{% if current_user.role=='admin' %} <span class="ml-1 px-2 py-0.5 text-xs rounded-full bg-indigo-600">ADMIN</span>{% endif %}</span>
+          <a href="{{ url_for('logout') }}" class="px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative z-10 max-w-6xl mx-auto p-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for cat,msg in messages %}
+          <div class="px-4 py-3 rounded-xl border border-white/10 bg-white/10">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="relative z-10 mt-10 border-t border-white/10 bg-white/5">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-sm opacity-80">© {{ 2025 }} GalaxyTix</div>
+  </footer>
+</body>
+</html>
+
